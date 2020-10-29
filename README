@@ -1,0 +1,5 @@
+TO RUN SERVER:  gcc -o server server.c -lpthread
+                ./server 8080    // ANY PORT NUMBER WORKS
+
+FOR CLEINT: gcc -o client client.c
+            ./client localhost 8080

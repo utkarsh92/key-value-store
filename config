@@ -1,0 +1,6 @@
+LISTENING_PORT_NO=8080          //no of ports
+CACHE_REPLACEMENT=LRU           //one of LRU of LFU
+CACHE_ENTRIES=20                //no of keys
+CLIENTS_PER_THREAD=10          //number of clients that each worker thread handles)
+THREAD_POOL_SIZE_INITIAL=5      //no of worker threads to start out with
+THREAD_POOL_GROWTH=5            //new threads to add each time you want to grow the pool
