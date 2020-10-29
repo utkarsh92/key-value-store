@@ -9,6 +9,74 @@
 #include <netinet/in.h>
 
 
+struct config
+{
+    int LISTENING_PORT_NO;
+    char CACHE_REPLACEMENT[3];
+    int CACHE_ENTRIES;                //no of keys
+    int CLIENTS_PER_THREAD;          //number of clients that each worker thread handles)
+    int THREAD_POOL_SIZE_INITIAL;      //no of worker threads to start out with;
+    int THREAD_POOL_GROWTH;            //new threads to add each time you want to grow the pool
+
+}typedef config;
+
+config conf;
+
+void read_config()
+{
+    FILE *file;
+    
+    int n=0,i=0;
+    char ch;
+    if((file=fopen("config","r"))!=NULL)
+    {   
+        
+        while(n<6 || ch==EOF)
+        {   
+            char no[10];
+            bzero(no,10);
+            i=0;
+            while(fgetc(file)!='=');
+            while((ch=fgetc(file))==' ');
+            while(ch!=' ')
+            {
+                no[i]=ch;
+                i++;
+                ch=fgetc(file);
+            }
+            no[i]='\0';
+            //printf("%s\n",no);
+            //n=atoi(no);
+            //printf("%d\n",n);
+            switch(n)
+            {
+                case 0:
+                    conf.LISTENING_PORT_NO=atoi(no);
+                    break;
+                case 1:
+                    strcpy(conf.CACHE_REPLACEMENT,no);
+                    break;
+                case 2:
+                    conf.CACHE_ENTRIES=atoi(no);
+                    break;
+                case 3:
+                    conf.CLIENTS_PER_THREAD=atoi(no);
+                    break;
+                case 4:
+                    conf.THREAD_POOL_SIZE_INITIAL=atoi(no);
+                    break;
+                case 5:
+                    conf.THREAD_POOL_GROWTH=atoi(no);
+                    break;
+
+            }
+            n++;
+        }
+    }
+    return ;
+}
+
+
 void error(char *msg)
 {
     perror(msg);
@@ -17,7 +85,7 @@ void error(char *msg)
 
 char * getvalue(char * key)
 {
-    char * value= "Updating Keyvalue Library Please will come back later"; /// call kvlibrary(key)
+    char * value= "Updating Keyvalue Library Please come back later"; /// call kvlibrary(key)
     //printf("here\n");
     value=strcat(value,"\0");
     //printf("value : %s\n",value);
@@ -46,8 +114,9 @@ void* worker (void * arg)
     return NULL;
 }
 
-int server_init(int portno)
+int server_init()
 {
+    int portno=conf.LISTENING_PORT_NO;
     int sockfd, newsockfd;
     struct sockaddr_in serv_addr;
     int n;
@@ -74,10 +143,10 @@ int main(int argc,char * argv[])
     int sockfd, newsockfd, clilen;
     char buffer[256];
     struct sockaddr_in  cli_addr;
-    int portno = atoi(argv[1]);
+    int portno ;//= atoi(argv[1]);
 
     ///
-    long thread=0, thread_count=5;
+    long thread=0, thread_count;
 	pthread_t * thread_handles;
     int err;
     pthread_mutex_t mutex;
@@ -85,7 +154,12 @@ int main(int argc,char * argv[])
     pthread_mutex_init(&mutex,NULL);
     ///
    
-    sockfd= server_init(portno);
+    read_config();
+    printf("%s",conf.CACHE_REPLACEMENT);
+    printf("%d %d %d %d %d",conf.LISTENING_PORT_NO,conf.CACHE_ENTRIES,conf.CLIENTS_PER_THREAD,conf.THREAD_POOL_SIZE_INITIAL,conf.THREAD_POOL_GROWTH);
+    portno=conf.LISTENING_PORT_NO;
+    thread_count=conf.THREAD_POOL_SIZE_INITIAL;
+    sockfd= server_init();
 
     while(1)
     {
@@ -99,7 +173,7 @@ int main(int argc,char * argv[])
         thread++;
         if(thread==thread_count)
         {
-            thread_count*=2; // replace by increment by no of threads given in config
+            thread_count+=conf.THREAD_POOL_GROWTH; // replace by increment by no of threads given in config
         }
     }
 
