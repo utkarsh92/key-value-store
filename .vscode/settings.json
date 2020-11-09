@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "vector": "cpp",
+        "memory": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp",
+        "string": "cpp",
+        "system_error": "cpp",
+        "iosfwd": "cpp",
+        "bitset": "cpp",
+        "thread": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp",
+        "iostream": "cpp"
+    }
+}
