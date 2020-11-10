@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unordered_map>
 #include<string.h>
+#include"kvStore.cpp"
 using namespace std;
 class Page {
 	public:
@@ -111,41 +112,53 @@ class LRUCache{
     string get(string key) {
 		
         if(cacheMap.find(key)==cacheMap.end()) {
-        	return "#";
-        }
+        	string value = getFileValue(key);
+			if (value == "\0"){
+					return encode2("F","Key not Found","");
+			}
+			else{
+				put(key,value);
+				return encode2("S",key,value);
+				}
+		}
         string val = cacheMap[key]->value;
         
         pageList->push_front(cacheMap[key]);
-        return val;
+        return encode2("S",key,val);
     }
     
-    void put(string key, string value) {
+    string put(string key, string value) {
     	if(cacheMap.find(key)!=cacheMap.end()) {
 			cacheMap[key]->dirty = 1;
     		cacheMap[key]->value = value;
     		pageList->push_front(cacheMap[key]);
-    		return;
+    		return encode2("S","Success Update!!","");
     	}
 
         if(size == capacity) {
 			//cout<<"full"<<endl;
         	string k = pageList->back()->key;
 			if(pageList->back()->dirty == 1){
-				cout<<"dirty need to write back to disk first"<<endl;
+				//cout<<k<<"<- key dirty with value"<<pageList->back()->value<<endl;
+				
+				putFileKey(k,pageList->back()->value);
 				//writetodisk(key,value);
 			}
         	cacheMap.erase(k);
         	pageList->pop_back();
         	size--;
+			//return encode2("S","Success!!","");
         }
 
 		
         Page *page = pageList->add_front(key, value);
+		putFileKey(key,value);
         size++;
         cacheMap[key] = page;
+		return encode2("S","Success Put!!","");
     }
 	
-	void deleteKey(string key){
+	string deleteKey(string key){
 		
 			if(cacheMap.find(key) != cacheMap.end()){
 				//string k = pageList->back()->key;
@@ -153,7 +166,10 @@ class LRUCache{
 				cacheMap.erase(key);
 				
 				size--;
-				
+				return delFileKey(key);
+			}
+			else{
+				return delFileKey(key);
 			}
 	}
 

@@ -42,7 +42,7 @@ void writeToFile(string path, string data)
 	file.close();
 }
 
-void delFileKey(string key)
+string delFileKey(string key)
 {
 	string path = getFilePath(key);
 	fstream file;
@@ -83,6 +83,7 @@ void delFileKey(string key)
 		if (!found)
 		{
 			// cout << "unknown key!" << endl;
+			return encode2("F","Key not Found","");
 		}
 		else
 		{
@@ -95,6 +96,7 @@ void delFileKey(string key)
 		// cout << "file not found del" << endl;
 		file.close();
 	}
+	return encode2("S","Successfull deletion","");
 }
 
 void putFileKey(string key, string val)
@@ -193,7 +195,7 @@ string getFileValue(string key)
 	// cout << "error reading file" << endl;
 	return "\0";
 }
-
+/*
 int main()
 {
 	putFileKey("eshan", "mittal");
@@ -225,4 +227,4 @@ int main()
 	// 	 << endl;
 
 	// return 0;
-}
+}*/

@@ -29,6 +29,26 @@ char *encode(char status, char key[256], char value[256])
 	return code;
 }
 
+char *encode2(string status, string key, string value)
+{
+	char s[1], k[256], v[256];
+	char *code = (char *)malloc(513);
+	code[0] = '\0';
+
+	memset(s, padd, 1);
+	memset(k, padd, 256);
+	memset(v, padd, 256);
+
+	strncpy(s, status.c_str(), 1);
+	strncpy(k, key.c_str(), strlen(key.c_str()));
+	strncpy(v, value.c_str(), strlen(value.c_str()));
+
+	strncat(code, s, 1);
+	strncat(code, k, 256);
+	strncat(code, v, 256);
+
+	return code;
+}
 string *decode(char *m)
 {
 	string *s = new string[3];
